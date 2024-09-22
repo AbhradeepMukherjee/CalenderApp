@@ -24,6 +24,8 @@ import CreateEventModal from "./CreateEventModal";
 import UpdateEventModal from "./UpdateEventModal";
 import ViewEventModal from "./ViewEventModal";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 export default function Home() {
   const [eventData, setEventData] = useState(null);
   const [fetchFlag, setFetchFlag] = useState(false);
@@ -130,7 +132,7 @@ export default function Home() {
     try {
       const token = await currentUser?.getIdToken();
       const response = await fetch(
-        `http://localhost:8000/api/v1/events/${eventId}`,
+        `${apiUrl}/events/${eventId}`,
         {
           method: "DELETE",
           headers: {
@@ -164,7 +166,7 @@ export default function Home() {
     try {
       const token = await currentUser?.getIdToken();
 
-      const response = await fetch("http://localhost:8000/api/v1/events", {
+      const response = await fetch(`${apiUrl}/events`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",

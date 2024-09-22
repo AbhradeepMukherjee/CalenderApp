@@ -16,6 +16,8 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/authContext";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -36,7 +38,7 @@ function Signup() {
         if(!firebaseUid){
           throw new Error('Failed to retrieve data!');
         }
-        const resp = await fetch("http://localhost:8000/api/v1/signup", {
+        const resp = await fetch(`${apiUrl}/signup`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

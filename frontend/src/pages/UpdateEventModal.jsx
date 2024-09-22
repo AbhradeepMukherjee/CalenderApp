@@ -21,6 +21,8 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { toast } from "react-toastify";
 import { useAuth } from "../contexts/authContext";
 
+const apiUrl = import.meta.env.VITE_BACKEND_URL;
+
 const UpdateEventModal = ({
   isOpen,
   onClose,
@@ -93,7 +95,7 @@ const UpdateEventModal = ({
     try {
       const firebaseUid = await currentUser?.getIdToken();
       const response = await fetch(
-        `http://localhost:8000/api/v1/events/${eventData.id}`,
+        `${apiUrl}/events/${eventData.id}`,
         {
           method: "PUT",
           headers: {
