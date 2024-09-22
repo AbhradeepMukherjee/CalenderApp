@@ -31,8 +31,23 @@ function Signup() {
     if (!isSigningUp) {
       setIsSigningUp(true);
       try {
-        await doCreateUserWithEmailAndPassword(email, password);
-        toast.success("Signed up successfully!");
+        const res = await doCreateUserWithEmailAndPassword(email, password);
+        const firebaseUid = res?.user?.uid;
+        if(!firebaseUid){
+          throw new Error('Failed to retrieve data!');
+        }
+        const resp = await fetch("http://localhost:8000/api/v1/signup", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ firebaseUid, name, email }),
+        })
+        if(resp.ok){
+          toast.success("Signed up successfully!");
+        }else{
+          toast.error('Sign up failed!');
+        }
       } catch (err) {
         setError(err.message);
         toast.error("Something went wrong. Please try again.");

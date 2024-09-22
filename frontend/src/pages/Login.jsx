@@ -17,7 +17,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 function Login() {
-  const { userLoggedIn } = useAuth();
+  const { currentUser, userLoggedIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -31,7 +31,7 @@ function Login() {
     if (!isSigningIn) {
       setIsSigningIn(true);
       try {
-        await doSignInUserWithEmailAndPassword(email, password);
+        const res = await doSignInUserWithEmailAndPassword(email, password);
         toast.success("Logged in successfully!");
       } catch (err) {
         setError(err.message);
