@@ -1,9 +1,9 @@
 
 # Project Title
-A brief description of what this project does and who it's for
+Personal Calendar Feature
 
 # Overview
-The goal of this project is to develop a simple yet functional calendar feature that enables users to create, view, edit, and delete events or meetings in their personal calendars. The application will have a user-friendly interface and robust backend to ensure seamless interaction with calendar events. User authentication will be implemented to ensure that users can manage their own events securely.
+The goal of this project is to develop a simple yet functional calendar feature that enables users to create, view, edit, and delete events or meetings in their personal calendars. The application will have a user-friendly and responsive interface and a backend to ensure interaction with calendar events. User authentication will be implemented to ensure that users can manage their own events securely.
 
 # Technology Stack
 - Frontend: ReactJS, Material UI
@@ -20,38 +20,38 @@ Make sure you have the following installed on your machine:
 # Installation
 ## Backend
 1. Clone the repository:
-   \`\`\`bash
+   ```bash
    git clone https://github.com/AbhradeepMukherjee/CalenderApp.git
    cd your-repo-name/backend
-   \`\`\`
+   ```
 2. Install dependencies:
-   \`\`\`bash
+   ```bash
    npm install
-   \`\`\`
-3. Create a .env file in the backend directory and add the environment variables (e.g., database connection string, Firebase API keys).
+   ```
+3. Create a ```.env``` file in the backend directory and add the environment variables (e.g., database connection string, Firebase API keys).
 4. Run database migrations
 ## Frontend
 1. In a new terminal, navigate to the frontend directory:
-   \`\`\`bash
+   ```bash
    cd /frontend
-   \`\`\`
+   ```
 2. Install dependencies:
-   \`\`\`bash
+   ```bash
    npm install
-   \`\`\`
-3. Create a .env file in the frontend directory and add the environment variables (e.g., backend url, Firebase API keys)
+   ```
+3. Create a ```.env``` file in the frontend directory and add the environment variables (e.g., backend url, Firebase API keys)
 
 # Running the Application
 1. Start the Backend
      In the backend directory, run:
-   \`\`\`bash
+   ```bash
    npm start
-   \`\`\`
+   ```
 2. Start the Frontend
    In the frontend directory, run:
-    \`\`\`bash
+    ```bash
    npm run dev
-   \`\`\`
+   ```
 3. Open your browser and go to http://localhost:5173 to view the application.
 
 # Core Features
