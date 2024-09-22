@@ -7,7 +7,9 @@ const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(cors({
+    origin: "https://calender-53tc3xtrw-abhradeepmukherjees-projects.vercel.app"
+}));
 app.use(express.json());
 
 app.use("/api/v1", userRoutes);
