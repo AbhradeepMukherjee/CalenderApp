@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 
 const allowedOrigins = [
   "https://calender-app-one.vercel.app",  
-  "https://calender-53tc3xtrw-abhradeepmukherjees-projects.vercel.app", 
+  'https://calender-d8mhd2gcd-abhradeepmukherjees-projects.vercel.app',
 ];
 
 app.use(
