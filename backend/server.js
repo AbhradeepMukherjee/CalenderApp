@@ -7,13 +7,31 @@ const app = express();
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({
-    origin: "https://calender-53tc3xtrw-abhradeepmukherjees-projects.vercel.app"
-}));
+
+const allowedOrigins = [
+  "https://calender-app-one.vercel.app",  
+  "https://calender-53tc3xtrw-abhradeepmukherjees-projects.vercel.app", 
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 app.use("/api/v1", userRoutes);
 app.use("/api/v1/events", eventRoutes);
+
 app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
