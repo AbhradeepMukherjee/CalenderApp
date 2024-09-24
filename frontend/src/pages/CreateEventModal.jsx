@@ -86,7 +86,7 @@ const CreateEventModal = ({
     };
 
     try {
-      const firebaseUid = await currentUser?.getIdToken();
+      const firebaseUid = await currentUser?.getIdToken(true);
       const response = await fetch(`${apiUrl}/events`, {
         method: "POST",
         headers: {

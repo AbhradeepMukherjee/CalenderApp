@@ -130,7 +130,7 @@ export default function Home() {
 
   const deleteHandler = async (eventId) => {
     try {
-      const token = await currentUser?.getIdToken();
+      const token = await currentUser?.getIdToken(true);
       const response = await fetch(
         `${apiUrl}/events/${eventId}`,
         {
@@ -164,7 +164,7 @@ export default function Home() {
 
   const fetchAllEventsData = async () => {
     try {
-      const token = await currentUser?.getIdToken();
+      const token = await currentUser?.getIdToken(true);
 
       const response = await fetch(`${apiUrl}/events`, {
         method: "GET",
