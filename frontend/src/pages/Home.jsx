@@ -181,9 +181,11 @@ export default function Home() {
     filterEventsByViewType(viewType);
   }, [fetchFlag, selectedDate, viewType]);
 
-  if (!userLoggedIn) {
-    navigate("/login");
-  }
+  useEffect(()=>{
+    if(!userLoggedIn){
+      navigate('/login');
+    }
+  },[userLoggedIn])
 
   return (
     <>
@@ -245,7 +247,7 @@ export default function Home() {
                 }}
               />
               <Typography variant="h8" sx={{ marginTop: 1 }}>
-                User: {currentUser.email}
+                User: {currentUser?.email}
               </Typography>
             </Box>
 

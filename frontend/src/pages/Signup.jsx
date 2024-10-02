@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -27,6 +27,12 @@ function Signup() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const { userLoggedIn } = useAuth();
+
+  useEffect(()=>{
+    if(userLoggedIn){
+      navigate('/');
+    }
+  }, [userLoggedIn, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -66,7 +72,6 @@ function Signup() {
 
   return (
     <>
-      {userLoggedIn && <Navigate to={"/"} replace={true} />}
       <CssBaseline />
       <Container
         maxWidth="xs"
