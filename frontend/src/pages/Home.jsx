@@ -203,25 +203,28 @@ export default function Home() {
     setFilteredEventsByWeekOrMonth(filtered);
   }, [eventData, viewType]);
 
-  if (!eventData) {
-    return (
-      <Box
-        sx={{
-          height: "100vh",
-          width: "100vw",
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h5">Loading...</Typography>
-      </Box>
-    );
+   if(!userLoggedIn){
+    navigate("/login")
   }
+  
+  // if (!eventData) {
+  //   return (
+  //     <Box
+  //       sx={{
+  //         height: "100vh",
+  //         width: "100vw",
+  //         display: "flex",
+  //         flexDirection: "row",
+  //         justifyContent: "center",
+  //         alignItems: "center",
+  //       }}
+  //     >
+  //       <Typography variant="h5">Loading...</Typography>
+  //     </Box>
+  //   );
+  // }
   return (
     <>
-      {!userLoggedIn && <Navigate to={"/"} replace={true} />}
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <Box
           sx={{
