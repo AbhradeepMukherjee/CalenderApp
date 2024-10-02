@@ -84,9 +84,9 @@ const CreateEventModal = ({
       isAllDay,
       recurrence,
     };
-
+    
     try {
-      const firebaseUid = await currentUser?.getIdToken(true);
+      const firebaseUid = await currentUser?.getIdToken();
       const response = await fetch(`${apiUrl}/events`, {
         method: "POST",
         headers: {
@@ -95,7 +95,6 @@ const CreateEventModal = ({
         },
         body: JSON.stringify(newEvent),
       });
-
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

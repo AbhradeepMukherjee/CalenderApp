@@ -27,7 +27,6 @@ import ViewEventModal from "./ViewEventModal";
 const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 export default function Home() {
-  const [eventData, setEventData] = useState(null);
   const [fetchFlag, setFetchFlag] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewType, setViewType] = useState("thisWeek");
@@ -81,66 +80,73 @@ export default function Home() {
     }
   };
 
-  const filterEventsByDate = (date) => {
-    const selectedDate = new Date(date);
-    const selectedDateToString = selectedDate.toDateString();
-    selectedDate.setHours(0, 0, 0, 0);
-    return eventData?.filter((event) => {
-      const eventStart = new Date(event.startDate);
-      const eventEnd = new Date(event.endDate);
-      return (
-        selectedDateToString === eventStart.toDateString() ||
-        selectedDateToString === eventEnd.toDateString() ||
-        (selectedDate >= eventStart && selectedDate <= eventEnd)
-      );
-    });
+  const filterEventsByDate = async () => {
+    try {
+      const token = await currentUser?.getIdToken();
+      const response = await fetch(`${apiUrl}/events/date/${selectedDate}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        console.error("Failed to fetch events for the selected date");
+        setFilteredEventsByDate([]);
+        return;
+      }
+      const events = await response.json();
+      setFilteredEventsByDate(events);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
-  const filterEventsByViewType = (type) => {
-    const now = new Date();
+  const filterEventsByViewType = async (type) => {
+    let endpoint;
 
     if (type === "thisWeek") {
-      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-      const endOfWeek = new Date(now.setDate(now.getDate() - now.getDay() + 6));
-
-      return eventData?.filter((event) => {
-        const eventStart = new Date(event.startDate);
-        const eventEnd = new Date(event.endDate);
-        return (
-          (eventStart >= startOfWeek && eventStart <= endOfWeek) ||
-          (eventEnd >= startOfWeek && eventEnd <= endOfWeek) ||
-          (eventStart <= startOfWeek && eventEnd >= endOfWeek)
-        );
-      });
+      const date = new Date(selectedDate);
+      const day = date.getDay();
+      const diff = day === 0 ? 0 : -day;
+      const startOfWeek = new Date(date.setDate(date.getDate() + diff))
+        .toISOString()
+        .split("T")[0];
+      endpoint = `${apiUrl}/events/week/${startOfWeek}`;
     } else if (type === "thisMonth") {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-      return eventData?.filter((event) => {
-        const eventStart = new Date(event.startTime);
-        const eventEnd = new Date(event.endTime);
-        return (
-          (eventStart >= startOfMonth && eventStart <= endOfMonth) ||
-          (eventEnd >= startOfMonth && eventEnd <= endOfMonth) ||
-          (eventStart <= startOfMonth && eventEnd >= endOfMonth)
-        );
+      const month = selectedDate.getMonth();
+      endpoint = `${apiUrl}/events/month/${month + 1}`;
+    }
+    try {
+      const token = await currentUser?.getIdToken();
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
       });
+      if (!response.ok) {
+        setFilteredEventsByWeekOrMonth([]);
+        throw new Error("Failed to fetch events");
+      }
+      const events = await response.json();
+      setFilteredEventsByWeekOrMonth(events);
+    } catch (error) {
+      console.error(error);
     }
   };
 
   const deleteHandler = async (eventId) => {
     try {
-      const token = await currentUser?.getIdToken(true);
-      const response = await fetch(
-        `${apiUrl}/events/${eventId}`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const token = await currentUser?.getIdToken();
+      const response = await fetch(`${apiUrl}/events/${eventId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
       if (response.ok) {
         setFetchFlag(!fetchFlag);
         toast.success("Event deleted successfully!");
@@ -162,36 +168,9 @@ export default function Home() {
     setSelectedEvent(event);
   };
 
-  const fetchAllEventsData = async () => {
-    try {
-      const token = await currentUser?.getIdToken(true);
-
-      const response = await fetch(`${apiUrl}/events`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch events");
-      }
-
-      const data = await response.json();
-      setEventData(data);
-    } catch (error) {
-      toast.error("Error fetching events!");
-    }
-  };
-
   useEffect(() => {
-    setFilteredEventsByDate(filterEventsByDate(selectedDate));
-  }, [eventData, selectedDate]);
-
-  useEffect(() => {
-    fetchAllEventsData();
-  }, [fetchFlag]);
+    filterEventsByDate(selectedDate);
+  }, [fetchFlag, selectedDate]);
 
   const handleViewTypeChange = (event) => {
     const type = event.target.value;
@@ -199,30 +178,13 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const filtered = filterEventsByViewType(viewType);
-    setFilteredEventsByWeekOrMonth(filtered);
-  }, [eventData, viewType]);
+    filterEventsByViewType(viewType);
+  }, [fetchFlag, selectedDate, viewType]);
 
-   if(!userLoggedIn){
-    navigate("/login")
+  if (!userLoggedIn) {
+    navigate("/login");
   }
-  
-  // if (!eventData) {
-  //   return (
-  //     <Box
-  //       sx={{
-  //         height: "100vh",
-  //         width: "100vw",
-  //         display: "flex",
-  //         flexDirection: "row",
-  //         justifyContent: "center",
-  //         alignItems: "center",
-  //       }}
-  //     >
-  //       <Typography variant="h5">Loading...</Typography>
-  //     </Box>
-  //   );
-  // }
+
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -306,9 +268,21 @@ export default function Home() {
                 <MenuItem value="thisMonth">This Month</MenuItem>
               </Select>
 
-              <Box sx={{ marginTop: 2 }}>
+              <Box
+                sx={{
+                  maxHeight:
+                    filteredEventsByWeekOrMonth?.length > 3 ? "300px" : "auto",
+                  overflowY:
+                    filteredEventsByWeekOrMonth?.length > 3
+                      ? "auto"
+                      : "visible",
+                  border: "1px solid #ccc",
+                  borderRadius: "4px",
+                  padding: "1rem",
+                }}
+              >
                 {filteredEventsByWeekOrMonth?.length > 0 ? (
-                  filteredEventsByWeekOrMonth?.map((event) => {
+                  filteredEventsByWeekOrMonth?.map((event, index) => {
                     const startOfEvent = formatDateString(
                       event.startDate.toString().trim()
                     );
@@ -321,10 +295,15 @@ export default function Home() {
                     const endTimeofEvent = formatDateString(
                       event.endDate.toString().trim()
                     );
+                    const isLastItem =
+                      index === filteredEventsByWeekOrMonth?.length - 1;
                     return (
                       <Box
                         key={event.id}
-                        sx={{ padding: 2, borderBottom: "1px solid #ccc" }}
+                        sx={{
+                          padding: 2,
+                          borderBottom: isLastItem ? "none" : "1px solid #ccc",
+                        }}
                       >
                         <Box
                           sx={{
@@ -411,99 +390,118 @@ export default function Home() {
             <Typography variant="h6">
               Events for {selectedDate.toDateString()}:
             </Typography>
-            {filteredEventsByDate?.length > 0 ? (
-              filteredEventsByDate?.map((event) => {
-                const startTimeofEvent = formatDateString(
-                  event.startTime.toString().trim()
-                );
-                const endTimeofEvent = formatDateString(
-                  event.endTime.toString().trim()
-                );
-                return (
-                  <Box
-                    key={event.id}
-                    sx={{ padding: 2, borderBottom: "1px solid #ccc" }}
-                  >
+            <Box
+              sx={{
+                maxHeight: filteredEventsByDate?.length > 3 ? "300px" : "auto",
+                overflowY:
+                  filteredEventsByDate?.length > 3 ? "auto" : "visible",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                padding: "1rem",
+              }}
+            >
+              {filteredEventsByDate?.length > 0 ? (
+                filteredEventsByDate?.map((event, index) => {
+                  const startTimeofEvent = formatDateString(
+                    event.startTime.toString().trim()
+                  );
+                  const endTimeofEvent = formatDateString(
+                    event.endTime.toString().trim()
+                  );
+                  const isLastItem = index === filteredEventsByDate.length - 1;
+                  return (
                     <Box
+                      key={event.id}
                       sx={{
-                        display: "flex",
-                        flexDirection: { md: "row", xs: "column" },
-                        justifyContent: "space-between",
-                        alignItems: { md: "center", xs: "flex-start" },
+                        padding: 2,
+                        borderBottom: isLastItem ? "none" : "1px solid #ccc",
                       }}
                     >
-                      <Typography sx={{ fontSize: { md: "20px", xs: "17px" } }}>
-                        {event.title}
-                      </Typography>
-                      {!event.isAllDay ? (
-                        <Typography
-                          sx={{ fontSize: { md: "15px", xs: "13px" } }}
-                        >
-                          {`${startTimeofEvent?.time}
-                             - ${endTimeofEvent?.time}  (${endTimeofEvent?.zone})`}
-                        </Typography>
-                      ) : (
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            alignItems: "center",
-                          }}
-                        >
-                          <Typography
-                            sx={{ fontSize: { md: "13px", xs: "11px" } }}
-                          >
-                            All Day
-                          </Typography>
-                          <ClockIcon />
-                        </Box>
-                      )}
-                    </Box>
-
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Typography sx={{ fontSize: { md: "17px", xs: "15px" } }}>
-                        {event.description}
-                      </Typography>
                       <Box
                         sx={{
                           display: "flex",
-                          gap: 1,
-                          justifyContent: "flex-end",
+                          flexDirection: { md: "row", xs: "column" },
+                          justifyContent: "space-between",
+                          alignItems: { md: "center", xs: "flex-start" },
                         }}
                       >
-                        <IconButton
-                          style={{ color: "black" }}
-                          onClick={() => handleViewButtonClick(event)}
+                        <Typography
+                          sx={{ fontSize: { md: "20px", xs: "17px" } }}
                         >
-                          <VisibilityIcon />
-                        </IconButton>
-                        <IconButton
-                          style={{ color: "black" }}
-                          onClick={() => deleteHandler(event.id)}
+                          {event.title}
+                        </Typography>
+                        {!event.isAllDay ? (
+                          <Typography
+                            sx={{ fontSize: { md: "15px", xs: "13px" } }}
+                          >
+                            {`${startTimeofEvent?.time}
+                             - ${endTimeofEvent?.time}  (${endTimeofEvent?.zone})`}
+                          </Typography>
+                        ) : (
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                          >
+                            <Typography
+                              sx={{ fontSize: { md: "13px", xs: "11px" } }}
+                            >
+                              All Day
+                            </Typography>
+                            <ClockIcon />
+                          </Box>
+                        )}
+                      </Box>
+
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Typography
+                          sx={{ fontSize: { md: "17px", xs: "15px" } }}
                         >
-                          <DeleteIcon />
-                        </IconButton>
-                        <IconButton
-                          style={{ color: "black" }}
-                          onClick={() => handleUpdateButtonClick(event)}
+                          {event.description}
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 1,
+                            justifyContent: "flex-end",
+                          }}
                         >
-                          <EditIcon />
-                        </IconButton>
+                          <IconButton
+                            style={{ color: "black" }}
+                            onClick={() => handleViewButtonClick(event)}
+                          >
+                            <VisibilityIcon />
+                          </IconButton>
+                          <IconButton
+                            style={{ color: "black" }}
+                            onClick={() => deleteHandler(event.id)}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                          <IconButton
+                            style={{ color: "black" }}
+                            onClick={() => handleUpdateButtonClick(event)}
+                          >
+                            <EditIcon />
+                          </IconButton>
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
-                );
-              })
-            ) : (
-              <Typography>No events for the selected day</Typography>
-            )}
+                  );
+                })
+              ) : (
+                <Typography>No events for the selected day</Typography>
+              )}
+            </Box>
             <Button
               sx={{
                 width: "100%",

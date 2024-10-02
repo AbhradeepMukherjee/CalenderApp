@@ -6,6 +6,9 @@ const {
   deleteEvent,
   getAllEvents,
   getEventById,
+  getEventByMonth,
+  getEventsByWeek,
+  getEventsByDate,
 } = require("../controllers/eventController.js");
 const authenticateFirebaseToken = require("../middleware/authMiddleware.js");
 
@@ -16,5 +19,8 @@ router.get("/:id", getEventById);
 router.post("/", createEvent);
 router.put("/:id", updateEvent);
 router.delete("/:id", deleteEvent);
+router.get('/month/:monthNumber', getEventByMonth);
+router.get('/week/:startOfWeek', getEventsByWeek);
+router.get('/date/:date', getEventsByDate);
 
 module.exports = router;

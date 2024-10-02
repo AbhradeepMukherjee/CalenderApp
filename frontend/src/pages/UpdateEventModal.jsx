@@ -93,7 +93,7 @@ const UpdateEventModal = ({
     };
 
     try {
-      const firebaseUid = await currentUser?.getIdToken(true);
+      const firebaseUid = await currentUser?.getIdToken();
       const response = await fetch(
         `${apiUrl}/events/${eventData.id}`,
         {
