@@ -12,48 +12,6 @@ The goal of this project is to develop a simple yet functional calendar feature 
 - ORM: Prisma
 - Authentication: Firebase
 
-# Prerequisites
-Make sure you have the following installed on your machine:
-- Node.js (v14 or higher)
-- npm (Node Package Manager)
-
-# Installation
-## Backend
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/AbhradeepMukherjee/CalenderApp.git
-   cd your-repo-name/backend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a ```.env``` file in the backend directory and add the environment variables (e.g., database connection string, Firebase API keys).
-4. Run database migrations
-## Frontend
-1. In a new terminal, navigate to the frontend directory:
-   ```bash
-   cd /frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Create a ```.env``` file in the frontend directory and add the environment variables (e.g., backend url, Firebase API keys)
-
-# Running the Application
-1. Start the Backend
-     In the backend directory, run:
-   ```bash
-   npm start
-   ```
-2. Start the Frontend
-   In the frontend directory, run:
-    ```bash
-   npm run dev
-   ```
-3. Open your browser and go to http://localhost:5173 to view the application.
-
 # Core Features
 ## User Authentication
 - Implemented basic user authentication using an off-the-shelf service Firebase.
@@ -115,4 +73,47 @@ Make sure you have the following installed on your machine:
 - PS: Please ignore the "Change your password" recommendation from Google password manager for my weak password 
 
 [Screencast from 2024-09-22 23-23-38.webm](https://github.com/user-attachments/assets/a9ae5f40-7734-4f4c-85b3-8471f3c59593)
+
+
+# Prerequisites
+Make sure you have the following installed on your machine:
+- Node.js (v14 or higher)
+- npm (Node Package Manager)
+
+# Installation
+## Backend
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/AbhradeepMukherjee/Role-based-access-control.git
+   cd your-repo-name/backend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a ```.env``` file in the backend directory and add the environment variables (e.g., database connection string, Firebase API keys).
+4. Run database migrations
+## Frontend
+1. In a new terminal, navigate to the frontend directory:
+   ```bash
+   cd /frontend
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Create a ```.env``` file in the frontend directory and add the environment variables (e.g., backend url, Firebase API keys)
+
+# Running the Application
+1. Start the Backend
+     In the backend directory, run:
+   ```bash
+   npm start
+   ```
+2. Start the Frontend
+   In the frontend directory, run:
+    ```bash
+   npm run dev
+   ```
+3. Open your browser and go to http://localhost:5173 to view the application.
 
